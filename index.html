@@ -1,925 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Max Renner — Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #10151a; --surface: #182029; --surface-2: #1e2830;
-    --text: #e6e9e6; --muted: #8c9a96; --line: #2a343c;
-    --accent: #5fc8b8; --accent-2: #e8ae52;
-    --net-line: rgba(95,200,184,0.16); --net-dot: rgba(95,200,184,0.5);
-    --glitch-1: #ff5f6d; --glitch-2: #5fc8ff;
-    --danger: #e07a6b;
-    box-sizing: border-box;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --bg: #f1f4f3; --surface: #ffffff; --surface-2: #eaeeec;
-      --text: #10151a; --muted: #5b6b66; --line: #d9e1de;
-      --accent: #1f8f7d; --accent-2: #b97a1f;
-      --net-line: rgba(31,143,125,0.14); --net-dot: rgba(31,143,125,0.45);
-    }
-  }
-  :root[data-theme="light"] {
-    --bg: #f1f4f3; --surface: #ffffff; --surface-2: #eaeeec;
-    --text: #10151a; --muted: #5b6b66; --line: #d9e1de;
-    --accent: #1f8f7d; --accent-2: #b97a1f;
-    --net-line: rgba(31,143,125,0.14); --net-dot: rgba(31,143,125,0.45);
-  }
-  :root[data-theme="dark"] {
-    --bg: #10151a; --surface: #182029; --surface-2: #1e2830;
-    --text: #e6e9e6; --muted: #8c9a96; --line: #2a343c;
-    --accent: #5fc8b8; --accent-2: #e8ae52;
-    --net-line: rgba(95,200,184,0.16); --net-dot: rgba(95,200,184,0.5);
-  }
-  *, *::before, *::after { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: env(safe-area-inset-top, 0px); }
-  html.force-reduce-motion { scroll-behavior: auto; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: 'Space Grotesk', system-ui, sans-serif; line-height: 1.55;
-    -webkit-font-smoothing: antialiased; position: relative;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover, a:focus-visible { text-decoration: underline; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
-  .visually-hidden {
-    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
-    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
-  }
-  .skip-link {
-    position: absolute; left: 12px; top: -60px; z-index: 100;
-    background: var(--accent); color: var(--bg); padding: 10px 16px; border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; transition: top 0.2s ease;
-  }
-  .skip-link:focus { top: 12px; text-decoration: none; }
-
-  #net-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-  #cursor-ring {
-    position: fixed; width: 34px; height: 34px; border-radius: 50%;
-    border: 1px solid var(--accent); pointer-events: none; z-index: 50;
-    transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.3s ease, width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
-  }
-  #cursor-ring::before, #cursor-ring::after { content: ""; position: absolute; background: var(--accent); }
-  #cursor-ring::before { left: 50%; top: -6px; width: 1px; height: 6px; transform: translateX(-50%); }
-  #cursor-ring::after { left: 50%; bottom: -6px; width: 1px; height: 6px; transform: translateX(-50%); }
-  #cursor-ring.hot { width: 50px; height: 50px; border-color: var(--accent-2); }
-  #cursor-glow {
-    position: fixed; width: 460px; height: 460px; border-radius: 50%;
-    background: radial-gradient(circle, var(--net-dot) 0%, transparent 70%);
-    pointer-events: none; z-index: 0; opacity: 0; transition: opacity 0.4s ease;
-    transform: translate(-50%, -50%); filter: blur(14px);
-  }
-
-  header.top {
-    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
-    background: color-mix(in srgb, var(--bg) 85%, transparent);
-    backdrop-filter: blur(8px); border-bottom: 1px solid var(--line);
-  }
-  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; max-width: 1080px; margin: 0 auto; gap: 12px; flex-wrap: wrap; }
-  .topbar .name { font-weight: 600; font-size: 1rem; letter-spacing: 0.2px; }
-  .topbar .right { display: flex; align-items: center; gap: 18px; }
-  .topbar nav { display: flex; gap: 22px; }
-  .topbar nav a { color: var(--muted); font-size: 0.92rem; position: relative; }
-  .topbar nav a[aria-current="page"] { color: var(--accent); }
-  .topbar nav a:hover { color: var(--text); text-decoration: none; }
-  html:not(.force-reduce-motion) .topbar nav a:hover::before,
-  html:not(.force-reduce-motion) .topbar nav a:hover::after {
-    content: attr(data-label); position: absolute; left: 0; top: 0; width: 100%; overflow: hidden;
-  }
-  html:not(.force-reduce-motion) .topbar nav a:hover::before { color: var(--glitch-1); animation: glitchA 0.4s steps(2) 1; clip-path: inset(0 0 55% 0); }
-  html:not(.force-reduce-motion) .topbar nav a:hover::after { color: var(--glitch-2); animation: glitchB 0.4s steps(2) 1; clip-path: inset(55% 0 0 0); }
-  @keyframes glitchA { 0% { transform: translate(0); } 30% { transform: translate(-2px,-1px); } 60% { transform: translate(2px,1px); } 100% { transform: translate(0); } }
-  @keyframes glitchB { 0% { transform: translate(0); } 30% { transform: translate(2px,1px); } 60% { transform: translate(-2px,-1px); } 100% { transform: translate(0); } }
-  .icon-btn {
-    background: none; border: 1px solid var(--line); color: var(--muted);
-    width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 0.9rem;
-    display: flex; align-items: center; justify-content: center;
-    transition: border-color 0.2s ease, color 0.2s ease;
-  }
-  .icon-btn:hover, .icon-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
-
-  .screen { padding-top: 0; }
-  section { padding: 88px 0; border-bottom: 1px solid var(--line); position: relative; }
-  section:last-of-type { border-bottom: none; }
-
-  .hero { padding-top: 64px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; }
-  .hero-text { opacity: 0; transform: translateY(14px); animation: rise 0.7s ease forwards 0.15s; }
-  .hero-graphic { opacity: 0; animation: fadeIn 0.9s ease forwards 0.4s; perspective: 800px; }
-  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
-  @keyframes fadeIn { to { opacity: 1; } }
-  .hero h1 { font-size: clamp(2.1rem, 4.4vw, 3.3rem); line-height: 1.12; margin: 0 0 20px; max-width: 13ch; font-weight: 600; min-height: 2.3em; }
-  .hero .lede { color: var(--muted); max-width: 46ch; font-size: 1.05rem; margin: 0 0 28px; }
-
-  .terminal {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
-    padding: 16px 18px; max-width: 420px; min-height: 118px;
-  }
-  .terminal .bar { display: flex; gap: 6px; margin-bottom: 12px; }
-  .terminal .bar span { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
-  .terminal .line { color: var(--text); white-space: pre; }
-  .terminal .prompt { color: var(--accent); }
-  .terminal .cursor { display: inline-block; width: 7px; height: 1em; background: var(--accent); vertical-align: text-bottom; animation: blink 1s step-end infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
-
-  .hero-graphic-inner { transition: transform 0.15s ease-out; transform-style: preserve-3d; }
-  .hero-graphic svg { width: 100%; height: auto; }
-  .hero-graphic .edge { stroke-dasharray: 6 10; animation: flow 3.5s linear infinite; }
-  .hero-graphic .edge:nth-child(2) { animation-delay: -0.6s; }
-  .hero-graphic .edge:nth-child(3) { animation-delay: -1.2s; }
-  .hero-graphic .edge:nth-child(4) { animation-delay: -1.8s; }
-  .hero-graphic .edge:nth-child(5) { animation-delay: -2.4s; }
-  .hero-graphic .edge:nth-child(6) { animation-delay: -3.0s; }
-  @keyframes flow { to { stroke-dashoffset: -160; } }
-  .hero-graphic .core { animation: pulse 2.4s ease-in-out infinite; transform-origin: 160px 160px; }
-  @keyframes pulse { 0%, 100% { r: 15; } 50% { r: 17; } }
-  .hero-graphic .node { cursor: pointer; transition: r 0.2s ease; }
-  .hero-graphic .node:hover, .hero-graphic .node:focus { r: 10; }
-
-  h2.label { font-size: 0.8rem; color: var(--accent); margin: 0 0 34px; font-family: 'JetBrains Mono', monospace; }
-  h2.label .n { color: var(--muted); }
-
-  .about-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 56px; }
-  .about-grid p { max-width: 58ch; color: var(--text); }
-  .about-grid p + p { margin-top: 16px; }
-  dl.facts { margin: 0; font-size: 0.9rem; }
-  dl.facts div { display: flex; gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); }
-  dl.facts div:first-child { border-top: none; }
-  dl.facts dt { color: var(--muted); width: 90px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; padding-top: 2px; }
-  dl.facts dd { margin: 0; }
-
-  .project { border-top: 1px solid var(--line); padding: 30px 0; }
-  .project:first-of-type { border-top: none; }
-  .project-head { display: grid; grid-template-columns: 28px 1fr auto; gap: 20px; align-items: start; cursor: pointer; background: none; border: none; text-align: left; width: 100%; padding: 0; color: inherit; font: inherit; }
-  .project .dot, .uproject .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 8px; flex-shrink: 0; transition: box-shadow 0.25s ease; }
-  .project[open] .dot { box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 25%, transparent); }
-  .project h3, .uproject h3 { margin: 0 0 8px; font-size: 1.25rem; font-weight: 600; }
-  .project .role { color: var(--muted); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; }
-  .expand-icon { font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: 0.85rem; margin-top: 6px; transition: transform 0.25s ease; }
-  .project[open] .expand-icon { transform: rotate(45deg); color: var(--accent); }
-  .project-body { grid-column: 2 / 3; margin-left: 48px; max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
-  .project[open] .project-body { max-height: 220px; }
-  .project-body-inner { padding-top: 14px; }
-  .project-body p { max-width: 62ch; margin: 0 0 14px; color: var(--text); }
-  .stack { display: flex; gap: 8px; flex-wrap: wrap; }
-  .stack span { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent); border: 1px solid var(--line); padding: 4px 9px; border-radius: 3px; }
-
-  .path { position: relative; padding-left: 30px; }
-  .path::before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 1px; background: var(--line); }
-  .step { position: relative; padding-bottom: 36px; }
-  .step:last-child { padding-bottom: 0; }
-  .step::before { content: ""; position: absolute; left: -30px; top: 3px; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); }
-  .step.pending::before { border-color: var(--accent-2); }
-  .step .when { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
-  .step h3 { margin: 0 0 6px; font-size: 1.05rem; font-weight: 600; }
-  .step p { margin: 0; color: var(--muted); max-width: 54ch; font-size: 0.94rem; }
-  .step.pending .when { color: var(--accent-2); }
-
-  .skill-net { width: 100%; max-width: 640px; height: auto; }
-  .skill-net .sline { stroke: var(--accent); stroke-width: 1.3; opacity: 0.5; stroke-dasharray: 200; stroke-dashoffset: 200; transition: stroke-dashoffset 1s ease; }
-  .skill-net.in-view .sline { stroke-dashoffset: 0; }
-  .skill-net .snode { fill: var(--surface); stroke: var(--accent); stroke-width: 1.4; opacity: 0; transform: scale(0.5); transform-box: fill-box; transform-origin: center; transition: opacity 0.4s ease, transform 0.4s ease; }
-  .skill-net.in-view .snode { opacity: 1; transform: scale(1); }
-  .skill-net text { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--text); opacity: 0; transition: opacity 0.5s ease 0.3s; }
-  .skill-net.in-view text { opacity: 1; }
-  .skill-net .scenter { fill: var(--accent); }
-
-  .contact h2.label { margin-bottom: 18px; }
-  .contact h1 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); font-weight: 600; margin: 0 0 22px; max-width: 16ch; }
-  .contact .links { display: flex; gap: 28px; flex-wrap: wrap; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
-
-  /* Projects screen */
-  #screen-projects h1.page-title { font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 600; margin: 0 0 14px; max-width: 20ch; }
-  #screen-projects .lede { margin-bottom: 40px; }
-  .project-form { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 24px; margin-bottom: 28px; max-width: 640px; }
-  .field { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .field label { font-size: 0.85rem; color: var(--muted); }
-  .field label .hint { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; margin-left: 6px; }
-  .field input, .field textarea {
-    background: var(--bg); border: 1px solid var(--line); border-radius: 4px; color: var(--text);
-    font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; padding: 10px 12px; resize: vertical;
-  }
-  .field input:focus, .field textarea:focus { border-color: var(--accent); }
-  .form-error { color: var(--danger); font-size: 0.85rem; min-height: 1.2em; }
-  .form-status { min-height: 1.2em; }
-  .storage-note { font-size: 0.82rem; color: var(--accent-2); margin: -6px 0 16px; max-width: 640px; }
-  .btn-primary, .btn-ghost {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; cursor: pointer; border-radius: 4px; padding: 10px 18px;
-  }
-  .btn-primary { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-ghost { background: none; color: var(--muted); border: 1px solid var(--line); margin-left: 10px; }
-  .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
-  .btn-link { background: none; border: none; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; cursor: pointer; padding: 2px 4px; }
-  .btn-link:hover { color: var(--accent); text-decoration: underline; }
-  .projects-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
-  .tag-filters { display: flex; gap: 8px; flex-wrap: wrap; }
-  .tag-chip {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; padding: 6px 12px; border-radius: 20px;
-    border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer;
-  }
-  .tag-chip.active, .tag-chip:hover { border-color: var(--accent); color: var(--accent); }
-  .project-list { list-style: none; margin: 24px 0 0; padding: 0; }
-  .uproject { display: flex; gap: 16px; border-top: 1px solid var(--line); padding: 22px 0; }
-  .uproject:first-child { border-top: none; }
-  .uproject-body { flex: 1; min-width: 0; }
-  .uproject-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .uproject-actions { display: flex; gap: 4px; flex-shrink: 0; }
-  .uproject p { margin: 4px 0 10px; color: var(--text); max-width: 62ch; }
-  .uproject-link { margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
-  html:not(.force-reduce-motion) .uproject.just-added { animation: popIn 0.5s ease; }
-  @keyframes popIn { 0% { opacity: 0; transform: translateY(8px) scale(0.97); } 100% { opacity: 1; transform: none; } }
-  .empty-state { color: var(--muted); font-size: 0.92rem; padding: 20px 0; border-top: 1px dashed var(--line); margin-top: 4px; }
-
-  footer { padding: 30px 0 calc(30px + env(safe-area-inset-bottom, 0px)); color: var(--muted); font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
-
-  @media (max-width: 760px) {
-    .hero { grid-template-columns: 1fr; }
-    .hero-graphic { order: -1; max-width: 280px; margin: 0 auto; }
-    .about-grid { grid-template-columns: 1fr; gap: 30px; }
-    .topbar nav { gap: 14px; }
-    section { padding: 60px 0; }
-    #cursor-glow, #cursor-ring { display: none; }
-    .field-row { grid-template-columns: 1fr; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .hero-text, .hero-graphic { animation: none; opacity: 1; transform: none; }
-    .hero-graphic .edge, .hero-graphic .core { animation: none; }
-    .skill-net .sline, .skill-net .snode, .skill-net text { transition: none; }
-  }
-  html.force-reduce-motion .hero-text, html.force-reduce-motion .hero-graphic { animation: none; opacity: 1; transform: none; }
-  html.force-reduce-motion .hero-graphic .edge, html.force-reduce-motion .hero-graphic .core { animation: none; }
-  html.force-reduce-motion .skill-net .sline, html.force-reduce-motion .skill-net .snode, html.force-reduce-motion .skill-net text { transition: none; }
-</style>
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="Maximilian Fona — Michigan State Computer Science student focused on cybersecurity, full-stack development, and thoughtful interfaces. Explore projects, experience, and skills.">
+<meta name="theme-color" content="#10151a">
+<title>Maximilian Fona · Developer & CS Student</title>
+<script src="preferences.js"></script>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<a class="skip-link" href="#main">Skip to content</a>
-<canvas id="net-bg" aria-hidden="true" role="presentation"></canvas>
-<div id="cursor-glow" aria-hidden="true" role="presentation"></div>
-<div id="cursor-ring" aria-hidden="true" role="presentation"></div>
-<div id="route-announcer" class="visually-hidden" aria-live="polite"></div>
-
-<header class="top" role="banner">
-  <div class="topbar">
-    <div class="name">Max Renner</div>
-    <nav aria-label="Primary">
-      <a href="#about" data-label="About">About</a>
-      <a href="#work" data-label="Work">Work</a>
-      <a href="#path" data-label="Path">Path</a>
-      <a href="#/projects" data-label="Projects">Projects</a>
-      <a href="#contact" data-label="Contact">Contact</a>
-    </nav>
-    <div class="right">
-      <button id="motion-toggle" class="icon-btn" aria-pressed="false" aria-label="Reduce motion" title="Reduce motion">⏸</button>
-      <button id="theme-toggle" class="icon-btn" aria-pressed="false" aria-label="Switch to light theme" title="Toggle theme">◐</button>
-    </div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+ <div class="topbar wrap">
+  <a class="brand" href="#home" aria-label="Maximilian Fona, home"><span class="brand-mark" aria-hidden="true">mf<span class="muted">/</span></span><span class="brand-name">Maximilian Fona</span></a>
+  <nav class="nav" id="primary-nav" aria-label="Main navigation"><a href="#about">About</a><a href="#work">Work</a><a href="#experience">Experience</a><a href="#skills">Skills</a><a href="#contact">Contact</a></nav>
+  <div class="tools js-only js-flex">
+   <button class="tool palette-trigger" id="command-open" aria-label="Open quick navigation" aria-haspopup="dialog" title="Quick navigation (Ctrl or Command K)"><span aria-hidden="true">⌕</span><span class="palette-text">Navigate</span><kbd aria-hidden="true">⌘ K</kbd></button>
+   <button class="tool" id="motion-toggle" aria-label="Pause animations" aria-pressed="false" title="Pause animations"><span aria-hidden="true">Ⅱ</span></button>
+   <button class="tool" id="theme-toggle" aria-label="Use light theme" aria-pressed="false" title="Use light theme"><span aria-hidden="true">◐</span></button>
+   <button class="tool menu-btn" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav"><span aria-hidden="true">☰</span></button>
   </div>
+ </div><div class="progress" id="scroll-progress" aria-hidden="true"></div>
 </header>
-
-<main id="main" class="wrap">
-
-  <div id="screen-home" class="screen">
-
-    <section class="hero">
-      <div class="hero-text">
-        <h1 id="scramble-target" data-final="Studying how systems break, so I can build the ones that don't."></h1>
-        <p class="lede">Computer Science sophomore at Michigan State University, concentrating in cybersecurity with an IT minor. I build applications and pull them apart to see what makes them secure.</p>
-        <div class="terminal" id="terminal">
-          <div class="bar"><span></span><span></span><span></span></div>
-          <div class="line" id="term-out"></div>
-        </div>
-      </div>
-      <div class="hero-graphic">
-        <div class="hero-graphic-inner" id="tilt-el">
-        <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram connecting Max to his core skills: Python, React, Security Plus, SQL, Docker and networking.">
-          <g stroke-width="1.4" fill="none" stroke="#5fc8b8" opacity="0.55">
-            <line class="edge" x1="160" y1="160" x2="60" y2="70"/>
-            <line class="edge" x1="160" y1="160" x2="255" y2="55"/>
-            <line class="edge" x1="160" y1="160" x2="270" y2="180"/>
-            <line class="edge" x1="160" y1="160" x2="200" y2="270"/>
-            <line class="edge" x1="160" y1="160" x2="70" y2="245"/>
-            <line class="edge" x1="160" y1="160" x2="45" y2="150"/>
-          </g>
-          <g stroke="#2a343c" stroke-width="1" fill="none">
-            <line x1="60" y1="70" x2="45" y2="150"/>
-            <line x1="255" y1="55" x2="270" y2="180"/>
-            <line x1="200" y1="270" x2="70" y2="245"/>
-          </g>
-          <circle class="core" cx="160" cy="160" r="15" fill="#5fc8b8"/>
-          <circle class="node" tabindex="0" cx="60" cy="70" r="7" fill="#8c9a96"><title>Python</title></circle>
-          <circle class="node" tabindex="0" cx="255" cy="55" r="7" fill="#8c9a96"><title>React</title></circle>
-          <circle class="node" tabindex="0" cx="270" cy="180" r="7" fill="#e8ae52"><title>Security+</title></circle>
-          <circle class="node" tabindex="0" cx="200" cy="270" r="7" fill="#8c9a96"><title>SQL</title></circle>
-          <circle class="node" tabindex="0" cx="70" cy="245" r="7" fill="#8c9a96"><title>Docker</title></circle>
-          <circle class="node" tabindex="0" cx="45" cy="150" r="7" fill="#8c9a96"><title>Networking</title></circle>
-          <text x="180" y="150" fill="#e6e9e6" font-family="JetBrains Mono, monospace" font-size="10">you</text>
-          <text x="75" y="55" fill="#8c9a96" font-family="JetBrains Mono, monospace" font-size="9">python</text>
-          <text x="215" y="42" fill="#8c9a96" font-family="JetBrains Mono, monospace" font-size="9">react</text>
-          <text x="277" y="178" fill="#e8ae52" font-family="JetBrains Mono, monospace" font-size="9">security+</text>
-          <text x="175" y="288" fill="#8c9a96" font-family="JetBrains Mono, monospace" font-size="9">sql</text>
-          <text x="15" y="262" fill="#8c9a96" font-family="JetBrains Mono, monospace" font-size="9">docker</text>
-          <text x="-8" y="140" fill="#8c9a96" font-family="JetBrains Mono, monospace" font-size="9">networking</text>
-        </svg>
-        </div>
-      </div>
-    </section>
-
-    <section id="about">
-      <h2 class="label">01 <span class="n">/ about</span></h2>
-      <div class="about-grid">
-        <div>
-          <p>I like the parts of software most people skip past: how a request actually gets authenticated, where a query touches the database, what happens when a service goes down. That habit is why cybersecurity stuck — it's the same curiosity, pointed at what could go wrong.</p>
-          <p>Outside of coursework I've worked as a website development intern and currently build a rental marketplace app with a small student team, handling both interface work and the underlying logic.</p>
-        </div>
-        <dl class="facts">
-          <div><dt>School</dt><dd>Michigan State University</dd></div>
-          <div><dt>Focus</dt><dd>Computer Science, Cybersecurity concentration</dd></div>
-          <div><dt>Minor</dt><dd>Information Technology</dd></div>
-          <div><dt>Based</dt><dd>East Lansing, MI</dd></div>
-        </dl>
-      </div>
-    </section>
-
-    <section id="work">
-      <h2 class="label">02 <span class="n">/ work</span></h2>
-
-      <details class="project" open>
-        <summary class="project-head" style="list-style:none;">
-          <span class="dot"></span>
-          <span>
-            <h3>Manoo</h3>
-            <div class="role">team project · in progress</div>
-          </span>
-          <span class="expand-icon">+</span>
-        </summary>
-        <div class="project-body"><div class="project-body-inner">
-          <p>A neighbor-to-neighbor rental and sharing marketplace built for Iași, Romania, developed with a small student team. I work across the React front end and product decisions, currently leading a UI redesign informed by user feedback on the earnings calculator and onboarding flow.</p>
-          <div class="stack"><span>React</span><span>JavaScript</span><span>UI design</span></div>
-        </div></div>
-      </details>
-
-      <details class="project">
-        <summary class="project-head" style="list-style:none;">
-          <span class="dot"></span>
-          <span>
-            <h3>Dockerized microservices application</h3>
-            <div class="role">CSE 380 · course project</div>
-          </span>
-          <span class="expand-icon">+</span>
-        </summary>
-        <div class="project-body"><div class="project-body-inner">
-          <p>A four-service backend built with Flask and Docker, covering JWT authentication, document management, search, and audit logging across services. Passed all 15 automated test cases.</p>
-          <div class="stack"><span>Python</span><span>Flask</span><span>Docker</span><span>JWT</span></div>
-        </div></div>
-      </details>
-
-      <details class="project">
-        <summary class="project-head" style="list-style:none;">
-          <span class="dot"></span>
-          <span>
-            <h3>Website development internship</h3>
-            <div class="role">internship</div>
-          </span>
-          <span class="expand-icon">+</span>
-        </summary>
-        <div class="project-body"><div class="project-body-inner">
-          <p>Built and maintained website features in a professional setting, translating design and content requirements into working front-end code.</p>
-          <div class="stack"><span>Web development</span></div>
-        </div></div>
-      </details>
-    </section>
-
-    <section id="path">
-      <h2 class="label">03 <span class="n">/ certification path</span></h2>
-      <div class="path">
-        <div class="step">
-          <div class="when">in progress</div>
-          <h3>CompTIA Network+</h3>
-          <p>Self-directed study using Professor Messer's course and practice exams, taken on after not securing a summer internship — turned the open time into a structured certification plan.</p>
-        </div>
-        <div class="step pending">
-          <div class="when">next</div>
-          <h3>CompTIA Security+</h3>
-          <p>Planned to follow directly after Network+, building toward a formal security credential alongside coursework.</p>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <h2 class="label">04 <span class="n">/ skills</span></h2>
-      <svg class="skill-net" id="skill-net" viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Network diagram of skills: Python, Flask, React, JavaScript, SQL, Docker, Networking, Linux.">
-      </svg>
-    </section>
-
-    <section id="contact" class="contact">
-      <h2 class="label">05 <span class="n">/ contact</span></h2>
-      <h1>Open to internships, collaborations, and anything security-shaped.</h1>
-      <div class="links">
-        <a href="mailto:you@example.com">you@example.com</a>
-        <a href="#">github.com/yourhandle</a>
-        <a href="#">linkedin.com/in/yourhandle</a>
-      </div>
-    </section>
-
+<main id="main" tabindex="-1">
+<section class="hero" id="home" aria-labelledby="hero-heading">
+ <canvas id="net-bg" aria-hidden="true"></canvas>
+ <div class="wrap">
+  <div class="hero-grid">
+   <div class="hero-copy">
+    <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Developer · CS student · Michigan State</p>
+    <h1 id="hero-heading">Understand<br>the system.<br><span>Build it better.</span></h1>
+    <p class="lede">I’m Maximilian Fona, a third-year Computer Science student exploring how thoughtful interfaces and secure systems come together.</p>
+    <div class="actions"><a class="btn primary" href="#work">Explore my work <span aria-hidden="true">↗</span></a><a class="btn" href="Maximilian-Fona-Resume.pdf" download="Maximilian-Fona-Resume.pdf">Download résumé <span aria-hidden="true">↓</span></a></div>
+   </div>
+   <div class="hero-visual">
+    <div class="window-bar mono"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>max@portfolio: ~</span><span>system ready</span></div>
+    <svg class="network" viewBox="0 0 460 252" aria-hidden="true" focusable="false">
+     <g class="edge"><path d="M230 126L93 65M230 126L365 65M230 126L365 188M230 126L93 188M93 65L93 188M365 65L365 188"/></g>
+     <circle cx="230" cy="126" r="54" fill="none" stroke="var(--line)"/><circle cx="230" cy="126" r="38" class="node"/>
+     <text x="230" y="131" text-anchor="middle" class="core-label">mf</text>
+     <rect x="48" y="49" width="90" height="32" rx="5" class="node"/><text x="93" y="69" text-anchor="middle">React</text>
+     <rect x="320" y="49" width="90" height="32" rx="5" class="node"/><text x="365" y="69" text-anchor="middle">Python</text>
+     <rect x="48" y="172" width="90" height="32" rx="5" class="node"/><text x="93" y="192" text-anchor="middle">Docker</text>
+     <rect x="320" y="172" width="90" height="32" rx="5" class="node"/><text x="365" y="192" text-anchor="middle">Security</text>
+     <text x="230" y="220" text-anchor="middle" class="small">interfaces ↔ infrastructure</text>
+    </svg>
+    <div class="terminal" aria-label="Profile summary">
+     <span class="term-line"><span class="prompt">$</span> whoami</span>
+     <span class="term-line term-response">maximilian_fona / cs_year_03</span>
+     <span class="term-line"><span class="prompt">$</span> cat focus.txt</span>
+     <span class="term-line term-response">full-stack · cybersecurity<span class="cursor" aria-hidden="true"></span></span>
+    </div>
+   </div>
   </div>
-
-  <div id="screen-projects" class="screen" hidden>
-    <section style="padding-top:64px; border-bottom:none;">
-      <h2 class="label">— <span class="n">/ your projects</span></h2>
-      <h1 id="projects-heading" class="page-title" tabindex="-1">Add your own work here.</h1>
-      <p class="lede">These are saved in this browser, so they'll still be here next time you open this page on this device. Nothing is sent anywhere else.</p>
-
-      <form id="project-form" class="project-form" novalidate aria-describedby="form-error">
-        <div class="field">
-          <label for="pf-title">Title <span aria-hidden="true">*</span><span class="visually-hidden">required</span></label>
-          <input id="pf-title" name="title" type="text" required maxlength="80" autocomplete="off">
-        </div>
-        <div class="field">
-          <label for="pf-desc">Short description</label>
-          <textarea id="pf-desc" name="desc" rows="2" maxlength="240"></textarea>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="pf-tags">Tech / tags <span class="hint">comma separated</span></label>
-            <input id="pf-tags" name="tags" type="text" autocomplete="off" placeholder="React, Node, PostgreSQL">
-          </div>
-          <div class="field">
-            <label for="pf-link">Link <span class="hint">optional</span></label>
-            <input id="pf-link" name="link" type="text" inputmode="url" autocomplete="off" placeholder="github.com/you/project">
-          </div>
-        </div>
-        <div id="form-error" class="form-error" role="alert"></div>
-        <div>
-          <button type="submit" id="form-submit-btn" class="btn-primary">Add project</button>
-          <button type="button" id="cancel-edit-btn" class="btn-ghost" hidden>Cancel edit</button>
-        </div>
-        <div id="form-status" class="form-status visually-hidden" aria-live="polite"></div>
-      </form>
-      <p id="storage-note" class="storage-note" hidden>Your browser is blocking local storage here, so new projects won't be saved after you leave this page.</p>
-
-      <div class="projects-toolbar">
-        <div id="tag-filters" class="tag-filters" role="group" aria-label="Filter projects by tag"></div>
-        <button id="export-btn" class="btn-ghost" type="button" hidden>Export as JSON</button>
-      </div>
-
-      <ul id="project-list" class="project-list"></ul>
-      <p id="empty-state" class="empty-state">No projects yet — add your first one above.</p>
-    </section>
-  </div>
-
+  <div class="hero-foot mono"><span>Michigan State University <span aria-hidden="true">/</span> Class of 2028</span><a href="#about">A little more about me <span aria-hidden="true">↓</span></a></div>
+ </div>
+</section>
+<div class="wrap">
+<section id="about" aria-labelledby="about-heading">
+ <p class="eyebrow"><span class="n">01 /</span> About</p>
+ <div class="about-grid">
+  <div class="about-copy"><h2 id="about-heading">Curiosity, put to work.</h2><p class="lead">From the interface to the request behind it, I like understanding how the pieces fit together.</p><p>I’m studying Computer Science in Michigan State’s College of Engineering, with a Cybersecurity concentration and an Information Technology minor through the Broad College of Business.</p><p>My work spans React interfaces, containerized Flask services, and mobile prototypes. I bring that same hands-on approach to security, product design, and a creative AI media project.</p><p class="about-note">English & Romanian · Greeks in Engineering Club · Delta Kappa Epsilon, Sigma Kappa Chapter</p></div>
+  <dl class="facts"><div><dt>Education</dt><dd>B.S. Computer Science<br><small>Michigan State University · Third year</small></dd></div><div><dt>Concentration</dt><dd>Cybersecurity</dd></div><div><dt>Minor</dt><dd>Information Technology</dd></div><div><dt>Graduation</dt><dd>Expected May 2028 · GPA 3.5</dd></div><div><dt>Home base</dt><dd>Lincolnshire, Illinois<br><small>Studying in East Lansing, Michigan</small></dd></div><div><dt>Previously</dt><dd>Adlai E. Stevenson High School<br><small>Highest Honors · Class of 2024</small></dd></div></dl>
+ </div>
+</section>
+<section id="work" aria-labelledby="work-heading">
+ <p class="eyebrow"><span class="n">02 /</span> Selected work</p>
+ <div class="section-head"><h2 id="work-heading">Built to learn. Made to work.</h2><p>A selection of team, academic, and independent projects across the stack.</p></div>
+ <div class="project-toolbar js-only js-flex">
+  <div class="filters" role="group" aria-label="Filter projects by category"><button type="button" class="filter" data-filter="all" aria-pressed="true">All work</button><button type="button" class="filter" data-filter="web" aria-pressed="false">Web</button><button type="button" class="filter" data-filter="systems" aria-pressed="false">Systems</button><button type="button" class="filter" data-filter="mobile" aria-pressed="false">Mobile</button><button type="button" class="filter" data-filter="creative" aria-pressed="false">Creative AI</button></div>
+  <div class="search-wrap"><label class="sr-only" for="project-search">Search project titles, technologies, or descriptions</label><input id="project-search" type="search" placeholder="Search projects or tech…" maxlength="100" autocomplete="off"></div>
+ </div>
+ <p class="results js-only" id="project-count" role="status" aria-live="polite" aria-atomic="true">4 projects</p>
+ <div class="project-grid" id="project-grid">
+  <article class="project-card" data-category="web" aria-labelledby="manoo-title">
+   <div class="card-art" aria-hidden="true"><span class="art-node">neighbor</span><span class="art-arrow">↔</span><div class="art-flow"><span class="art-node">manoo</span><span class="art-node">pickup hub</span></div><span class="art-arrow">↔</span><span class="art-node">neighbor</span></div>
+   <div class="card-copy"><div class="project-kicker"><span>01 · Internship / team</span><span>Web</span></div><h3 id="manoo-title">Manoo rental marketplace</h3><p>A neighbor-to-neighbor rental app connecting item listings, in-app payments, and hub-based pickup and dropoff.</p><div class="tags"><span class="tag">React</span><span class="tag">JavaScript</span><span class="tag">UI/UX</span><span class="tag">Gamification</span></div><details><summary>Explore my contribution</summary><ul><li>Built full-stack marketplace features with the team during my Technical Intern role.</li><li>Implemented XP, levels, streaks, achievements, and leaderboards to encourage engagement.</li><li>Iterated on the component design system, branding, and interactive features with stakeholder feedback.</li><li>Contributed to carbon-footprint tracking that quantifies and visualizes users’ environmental impact.</li></ul></details></div>
+  </article>
+  <article class="project-card" data-category="systems" aria-labelledby="flask-title">
+   <div class="card-art" aria-hidden="true"><span class="art-node">JWT / API</span><span class="art-arrow">→</span><div class="art-flow"><span class="art-node">users · docs</span><span class="art-node">search · logs</span></div><span class="art-arrow">⊂</span><span class="art-node">Docker</span></div>
+   <div class="card-copy"><div class="project-kicker"><span>02 · CSE 380 / MSU</span><span>Systems</span></div><h3 id="flask-title">Dockerized Flask microservices</h3><p>A containerized web application with services for user management, document handling, full-text search, and request logging.</p><div class="tags"><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">Docker</span><span class="tag">REST APIs</span><span class="tag">JWT</span></div><details><summary>Explore the architecture</summary><ul><li>Architected the application with Docker, Flask, and REST APIs.</li><li>Implemented JWT authentication and communication between services.</li><li>Applied secure system design principles aligned with confidentiality, integrity, and availability: the CIA Triad.</li></ul></details></div>
+  </article>
+  <article class="project-card" data-category="mobile" aria-labelledby="venmo-title">
+   <div class="card-art" aria-hidden="true"><span class="art-caption">interface<br>state<br>interaction</span><div class="phone-art">Mock wallet<div class="amount">$24.00</div><div class="tiny-line"></div><div class="tiny-line" style="width:65%"></div></div><span class="art-node">SwiftUI</span></div>
+   <div class="card-copy"><div class="project-kicker"><span>03 · Independent project</span><span>Mobile</span></div><h3 id="venmo-title">Mock Venmo app</h3><p>A SwiftUI front-end prototype recreating payment transfer flows, transaction history, and user profiles with clear navigation.</p><div class="tags"><span class="tag">Swift</span><span class="tag">SwiftUI</span><span class="tag">State management</span><span class="tag">iOS</span></div><details><summary>Explore the interface</summary><ul><li>Built custom components and animations from scratch, focusing on visual hierarchy and responsive layouts.</li><li>Practiced state management, accessibility, and user flow optimization.</li><li>A UI learning project that simulates payment flows; it does not process real payments.</li></ul></details></div>
+  </article>
+  <article class="project-card" data-category="creative" aria-labelledby="ai-title">
+   <div class="card-art" aria-hidden="true"><span class="art-stat">40K+</span><span class="art-caption">Instagram<br>followers<br>AI media</span></div>
+   <div class="card-copy"><div class="project-kicker"><span>04 · Founder & manager</span><span>Creative AI</span></div><h3 id="ai-title">AI media, from script to screen</h3><p>Founded and grew an Instagram account to 40,000+ followers, owning content strategy, production, publishing, and growth.</p><div class="tags"><span class="tag">Leonardo AI</span><span class="tag">Hedra</span><span class="tag">ElevenLabs</span><span class="tag">Kling AI</span><span class="tag">CapCut</span></div><details><summary>Explore the production workflow</summary><ul><li>Designed an end-to-end AI content pipeline for a recurring short-form video series.</li><li>Developed an “AI news broadcast” format, from scripting to generated visuals and voice, editing, and publishing.</li><li>Independently managed the content calendar and publishing cadence.</li></ul></details></div>
+  </article>
+ </div>
+ <div class="empty" id="project-empty" hidden><p>No projects match those filters.</p><button class="btn" id="reset-filters" type="button">Reset search & filters</button></div>
+</section>
+<section id="experience" aria-labelledby="experience-heading">
+ <p class="eyebrow"><span class="n">03 /</span> Experience</p><div class="section-head"><h2 id="experience-heading">Learning in the real world.</h2><p>Building with teams. Listening to feedback. Following through on the details.</p></div>
+ <article class="experience-row"><div><div class="date">Jul 2026 – Oct 2026<br>Remote</div><div class="company">Manoo Start Up</div></div><div><h3>Technical Intern</h3><ul><li>Collaborated on a full-stack rental marketplace in React, including listings, in-app payments, and pickup/dropoff hubs.</li><li>Built gamification features and iterated on UI/UX, a component design system, and branding with stakeholder feedback.</li><li>Contributed to sustainability features that visualize users’ carbon footprint.</li></ul></div></article>
+ <article class="experience-row"><div><div class="date">May 2024 – Aug 2024<br>Remote</div><div class="company">Sekady Capital</div></div><div><h3>Website Developer Intern</h3><ul><li>Developed and maintained website features with HTML, CSS, and JavaScript.</li><li>Collaborated on requirements and project planning, and participated in code reviews to improve code quality and maintainability.</li></ul></div></article>
+ <article class="experience-row"><div><div class="date">Sep 2021 – Aug 2026<br>Lincolnshire, IL</div><div class="company">Chipy Café</div></div><div><h3>Waiter & Busboy</h3><p>Managed high-volume service, operated POS systems and processed payments accurately, and coordinated with front-of-house and kitchen teams in a fast-paced environment.</p></div></article>
+</section>
+<section id="skills" aria-labelledby="skills-heading">
+ <p class="eyebrow"><span class="n">04 /</span> Toolkit & continued learning</p><h2 id="skills-heading">Across the stack. Always learning.</h2>
+ <div class="skill-grid"><div class="skill-group"><h3>Languages & interfaces</h3><p>C · C++ · Java · Python · JavaScript · TypeScript · Swift · HTML/CSS · SQL</p><div class="tags"><span class="tag">React</span><span class="tag">SwiftUI</span></div></div><div class="skill-group"><h3>Systems & security</h3><p>Microservices architecture, REST APIs, JWT authentication, and encryption fundamentals.</p><div class="tags"><span class="tag">Git</span><span class="tag">Docker</span><span class="tag">Flask</span></div></div><div class="skill-group"><h3>Data & collaboration</h3><p>SQL joins, indexing, execution order, ER diagrams, and relational modeling. Excel formulas, pivot tables, VLOOKUP, and data analysis.</p><div class="tags"><span class="tag">Google Sheets</span><span class="tag">Word</span><span class="tag">PowerPoint</span></div></div></div>
+ <div id="path" class="certs" aria-label="Certification studies"><article class="cert"><h3>CompTIA Network+</h3><span class="badge">In progress</span><p>Building networking knowledge alongside my Computer Science coursework.</p></article><article class="cert"><h3>CompTIA Security+</h3><span class="badge">In progress</span><p>Target: December 2026. Developing security foundations alongside my Cybersecurity concentration.</p></article></div>
+</section>
+<section class="contact" id="contact" aria-labelledby="contact-heading">
+ <p class="eyebrow"><span class="n">05 /</span> Contact</p>
+ <div class="contact-grid"><div><h2 id="contact-heading">Let’s build something thoughtful.</h2><p>Have an internship opportunity, a project idea, or an interesting systems problem? Let’s talk.</p><button class="btn copy-btn js-only" id="copy-email" type="button">Copy email address <span aria-hidden="true">↗</span></button><p class="copy-status" id="copy-status" role="status"></p></div><div class="contact-links"><a href="mailto:maxfona20@gmail.com">maxfona20@gmail.com <span aria-hidden="true">↗</span></a><a href="https://github.com/maxfona20" target="_blank" rel="noopener noreferrer">GitHub / maxfona20 <span class="sr-only"> (opens in a new tab)</span><span aria-hidden="true">↗</span></a><a href="https://www.linkedin.com/in/maximilian-fona" target="_blank" rel="noopener noreferrer">LinkedIn / maximilian-fona <span class="sr-only"> (opens in a new tab)</span><span aria-hidden="true">↗</span></a><a href="tel:+12247153708">224-715-3708 <span aria-hidden="true">↗</span></a></div></div>
+ <div class="site-panel"><div><strong class="mono">Small footprint. Thoughtful details.</strong><small>Built with HTML, CSS & vanilla JavaScript. No external dependencies.</small></div><div class="site-metrics mono"><div><b>01 file</b>Works offline</div><div><b id="motion-metric">Static</b>Motion</div><div><b id="canvas-metric">Idle</b>Background</div></div></div>
+</section>
+<details class="notebook js-only" id="notebook"><summary>Interactive demo / Local project notebook</summary><div class="notebook-body"><h2>Try the project notebook.</h2><p>A small browser-storage demo. Add, edit, export, or remove your own project notes. They stay in this browser and don’t change the portfolio above or publish anything. Export a backup before changing browsers or clearing site data.</p><p class="storage-note" id="storage-note" role="status"></p><div class="note-grid">
+ <form id="project-form" class="project-form" aria-describedby="form-error"><div class="field"><label for="pf-title">Project title (required)</label><input id="pf-title" name="projectTitle" maxlength="80" required autocomplete="off"></div><div class="field"><label for="pf-desc">Description</label><textarea id="pf-desc" name="description" maxlength="500" rows="3"></textarea></div><div class="field"><label for="pf-tags">Technologies</label><input id="pf-tags" name="tags" maxlength="200" autocomplete="off" aria-describedby="tag-hint"><small id="tag-hint">Comma-separated, up to 8 tags.</small></div><div class="field"><label for="pf-link">Project URL (optional)</label><input id="pf-link" name="projectUrl" type="url" maxlength="1000" placeholder="https://…" autocomplete="off" aria-describedby="url-hint"><small id="url-hint">A complete http:// or https:// address.</small></div><p id="form-error" class="form-error" role="alert"></p><div class="actions"><button class="btn primary" type="submit" id="save-project">Add project</button><button class="btn" type="button" id="cancel-edit" hidden>Cancel edit</button></div></form>
+ <div><div class="local-toolbar"><span class="mono muted" id="local-count">0 saved projects</span><button class="btn small-btn" id="export-projects" type="button">Export JSON</button></div><ul class="local-list" id="local-list"></ul><p class="muted" id="local-empty">Your notebook is empty. Add a project to try it.</p><p id="notebook-status" class="notice" role="status" aria-live="polite"></p><button class="btn small-btn" type="button" id="undo-delete" hidden>Undo last deletion</button></div>
+ </div></div></details>
+<noscript><p class="muted">All portfolio content and the résumé are available without JavaScript. Enable JavaScript for filters, quick navigation, and the local notebook.</p></noscript>
+</div>
 </main>
-
-<footer role="contentinfo" class="wrap">Max Renner — East Lansing, MI</footer>
-
-<script>
-(function () {
-  var root = document.documentElement;
-
-  function osReducedMotion() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-  function motionReduced() { return root.classList.contains('force-reduce-motion') || osReducedMotion(); }
-
-  // Motion toggle (manual override, persisted)
-  var motionBtn = document.getElementById('motion-toggle');
-  try {
-    var savedMotion = localStorage.getItem('portfolio-motion');
-    if (savedMotion === 'reduced') root.classList.add('force-reduce-motion');
-  } catch (e) {}
-  function syncMotionBtn() {
-    var on = root.classList.contains('force-reduce-motion');
-    motionBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    motionBtn.setAttribute('aria-label', on ? 'Motion reduced — click to restore animation' : 'Reduce motion');
-  }
-  syncMotionBtn();
-  motionBtn.addEventListener('click', function () {
-    root.classList.toggle('force-reduce-motion');
-    try { localStorage.setItem('portfolio-motion', root.classList.contains('force-reduce-motion') ? 'reduced' : 'full'); } catch (e) {}
-    syncMotionBtn();
-  });
-
-  // Theme toggle
-  var themeBtn = document.getElementById('theme-toggle');
-  function applyTheme(t) { if (t) root.setAttribute('data-theme', t); }
-  try {
-    var savedTheme = localStorage.getItem('portfolio-theme');
-    if (savedTheme) applyTheme(savedTheme);
-  } catch (e) {}
-  function syncThemeBtn() {
-    var current = root.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-    themeBtn.setAttribute('aria-label', current === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
-    themeBtn.setAttribute('aria-pressed', current === 'light' ? 'true' : 'false');
-  }
-  syncThemeBtn();
-  themeBtn.addEventListener('click', function () {
-    var current = root.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-    var next = current === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-    try { localStorage.setItem('portfolio-theme', next); } catch (e) {}
-    syncThemeBtn();
-  });
-
-  // Scramble-decrypt headline
-  var scrambleChars = '!<>-_\\/[]{}—=+*^?#________';
-  var h1 = document.getElementById('scramble-target');
-  var finalText = h1.getAttribute('data-final');
-  function scrambleIn() {
-    if (motionReduced()) { h1.textContent = finalText; return; }
-    var revealed = 0, frame = 0;
-    function tick() {
-      var out = '';
-      for (var i = 0; i < finalText.length; i++) {
-        if (i < revealed) out += finalText[i];
-        else if (finalText[i] === ' ') out += ' ';
-        else out += scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
-      }
-      h1.textContent = out;
-      frame++;
-      if (frame % 2 === 0 && revealed < finalText.length) revealed++;
-      if (revealed < finalText.length) requestAnimationFrame(tick);
-      else h1.textContent = finalText;
-    }
-    tick();
-  }
-  setTimeout(scrambleIn, 150);
-
-  // Terminal typing effect
-  var out = document.getElementById('term-out');
-  var lines = [
-    { p: '$ ', t: 'whoami' },
-    { p: '> ', t: 'max — cs sophomore, cybersecurity concentration' },
-    { p: '$ ', t: 'status --certs' },
-    { p: '> ', t: 'network+ in progress, security+ queued' }
-  ];
-  function typeLines(i, char, buffer) {
-    if (i >= lines.length) { out.innerHTML += '<span class="cursor"></span>'; return; }
-    var entry = lines[i];
-    if (char === 0) {
-      buffer = document.createElement('div');
-      var pr = document.createElement('span');
-      pr.className = 'prompt'; pr.textContent = entry.p;
-      buffer.appendChild(pr);
-      buffer.appendChild(document.createTextNode(''));
-      out.appendChild(buffer);
-    }
-    if (char <= entry.t.length) {
-      buffer.lastChild.textContent = entry.t.slice(0, char);
-      setTimeout(function () { typeLines(i, char + 1, buffer); }, motionReduced() ? 0 : 18);
-    } else {
-      setTimeout(function () { typeLines(i + 1, 0, null); }, motionReduced() ? 0 : 220);
-    }
-  }
-  if (motionReduced()) { lines.forEach(function(l){}); out.textContent = ''; typeLines(0, 0, null); }
-  else setTimeout(function () { typeLines(0, 0, null); }, 900);
-
-  // Expand icon +/x swap
-  document.querySelectorAll('.project').forEach(function (p) {
-    p.addEventListener('toggle', function () {
-      p.querySelector('.expand-icon').textContent = p.open ? '×' : '+';
-    });
-  });
-
-  // Hero graphic tilt toward cursor
-  var tiltEl = document.getElementById('tilt-el');
-  if (window.matchMedia('(pointer: fine)').matches) {
-    document.querySelector('.hero-graphic').addEventListener('mousemove', function (e) {
-      if (motionReduced()) return;
-      var r = this.getBoundingClientRect();
-      var px = (e.clientX - r.left) / r.width - 0.5;
-      var py = (e.clientY - r.top) / r.height - 0.5;
-      tiltEl.style.transform = 'rotateY(' + (px * 12) + 'deg) rotateX(' + (-py * 12) + 'deg)';
-    });
-    document.querySelector('.hero-graphic').addEventListener('mouseleave', function () {
-      tiltEl.style.transform = 'rotateY(0) rotateX(0)';
-    });
-  }
-
-  // Cursor ring + glow (desktop, fine pointer only)
-  if (window.matchMedia('(pointer: fine)').matches) {
-    var ring = document.getElementById('cursor-ring');
-    var glow = document.getElementById('cursor-glow');
-    var rx = 0, ry = 0, tx = 0, ty = 0;
-    window.addEventListener('mousemove', function (e) {
-      tx = e.clientX; ty = e.clientY;
-      ring.style.opacity = '1'; glow.style.opacity = '1';
-      glow.style.left = tx + 'px'; glow.style.top = ty + 'px';
-    });
-    window.addEventListener('mouseleave', function () { ring.style.opacity = '0'; glow.style.opacity = '0'; });
-    document.querySelectorAll('a, button, summary, input, textarea, .node').forEach(function (el) {
-      el.addEventListener('mouseenter', function () { ring.classList.add('hot'); });
-      el.addEventListener('mouseleave', function () { ring.classList.remove('hot'); });
-    });
-    function ringLoop() {
-      rx += (tx - rx) * 0.18; ry += (ty - ry) * 0.18;
-      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-      requestAnimationFrame(ringLoop);
-    }
-    ringLoop();
-  }
-
-  // Skill network diagram (builds once, draws in on scroll)
-  var skills = ['Python', 'Flask', 'React', 'JavaScript', 'SQL', 'Docker', 'Networking', 'Linux'];
-  var svgNS = 'http://www.w3.org/2000/svg';
-  var skillSvg = document.getElementById('skill-net');
-  var cx = 280, cy = 150, radius = 110;
-  var frag = document.createDocumentFragment();
-  var positions = skills.map(function (name, i) {
-    var angle = (i / skills.length) * Math.PI * 2 - Math.PI / 2;
-    return { name: name, x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius };
-  });
-  positions.forEach(function (p) {
-    var line = document.createElementNS(svgNS, 'line');
-    line.setAttribute('class', 'sline');
-    line.setAttribute('x1', cx); line.setAttribute('y1', cy);
-    line.setAttribute('x2', p.x); line.setAttribute('y2', p.y);
-    frag.appendChild(line);
-  });
-  var center = document.createElementNS(svgNS, 'circle');
-  center.setAttribute('class', 'snode scenter');
-  center.setAttribute('cx', cx); center.setAttribute('cy', cy); center.setAttribute('r', 9);
-  frag.appendChild(center);
-  positions.forEach(function (p, i) {
-    var node = document.createElementNS(svgNS, 'circle');
-    node.setAttribute('class', 'snode');
-    node.setAttribute('cx', p.x); node.setAttribute('cy', p.y); node.setAttribute('r', 6);
-    node.style.transitionDelay = (i * 0.06) + 's';
-    frag.appendChild(node);
-    var label = document.createElementNS(svgNS, 'text');
-    var dx = p.x > cx ? 10 : (p.x < cx ? -10 : 0);
-    var anchor = p.x > cx + 5 ? 'start' : (p.x < cx - 5 ? 'end' : 'middle');
-    label.setAttribute('x', p.x + dx);
-    label.setAttribute('y', p.y + (p.y > cy ? 16 : -10));
-    label.setAttribute('text-anchor', anchor);
-    label.style.transitionDelay = (i * 0.06) + 's';
-    label.textContent = p.name;
-    frag.appendChild(label);
-  });
-  skillSvg.appendChild(frag);
-  if (motionReduced() || !('IntersectionObserver' in window)) {
-    skillSvg.classList.add('in-view');
-  } else {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) { skillSvg.classList.add('in-view'); io.disconnect(); }
-      });
-    }, { threshold: 0.35 });
-    io.observe(skillSvg);
-  }
-
-  // Background node network
-  var canvas = document.getElementById('net-bg');
-  var ctx = canvas.getContext('2d');
-  var w, h, nodes = [];
-  var lineColor, dotColor;
-  function readColors() {
-    var cs = getComputedStyle(root);
-    lineColor = cs.getPropertyValue('--net-line').trim();
-    dotColor = cs.getPropertyValue('--net-dot').trim();
-  }
-  function resize() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = document.body.scrollHeight;
-    var count = Math.min(90, Math.floor((w * h) / 26000));
-    nodes = [];
-    for (var i = 0; i < count; i++) {
-      nodes.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25 });
-    }
-  }
-  function step() {
-    readColors();
-    ctx.clearRect(0, 0, w, h);
-    var reduced = motionReduced();
-    for (var i = 0; i < nodes.length; i++) {
-      var n = nodes[i];
-      if (!reduced) {
-        n.x += n.vx; n.y += n.vy;
-        if (n.x < 0 || n.x > w) n.vx *= -1;
-        if (n.y < 0 || n.y > h) n.vy *= -1;
-      }
-    }
-    ctx.lineWidth = 1;
-    for (var a = 0; a < nodes.length; a++) {
-      for (var b = a + 1; b < nodes.length; b++) {
-        var dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 130) {
-          ctx.strokeStyle = lineColor;
-          ctx.globalAlpha = 1 - dist / 130;
-          ctx.beginPath(); ctx.moveTo(nodes[a].x, nodes[a].y); ctx.lineTo(nodes[b].x, nodes[b].y); ctx.stroke();
-        }
-      }
-    }
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = dotColor;
-    for (var c = 0; c < nodes.length; c++) {
-      ctx.beginPath(); ctx.arc(nodes[c].x, nodes[c].y, 1.6, 0, Math.PI * 2); ctx.fill();
-    }
-    requestAnimationFrame(step);
-  }
-  window.addEventListener('resize', resize);
-  resize(); step();
-
-  /* ---------- Router ---------- */
-  var homeScreen = document.getElementById('screen-home');
-  var projectsScreen = document.getElementById('screen-projects');
-  var announcer = document.getElementById('route-announcer');
-  function setRoute(hash, opts) {
-    opts = opts || {};
-    var isProjects = hash === '#/projects';
-    homeScreen.hidden = isProjects;
-    projectsScreen.hidden = !isProjects;
-    var projLink = document.querySelector('.topbar nav a[href="#/projects"]');
-    if (projLink) projLink.setAttribute('aria-current', isProjects ? 'page' : 'false');
-    document.title = isProjects ? 'Projects — Max Renner' : 'Max Renner — Portfolio';
-    if (announcer) announcer.textContent = isProjects ? 'Projects screen' : 'Home screen';
-    if (isProjects) {
-      document.getElementById('projects-heading').focus();
-    } else if (!opts.skipScroll && hash && hash !== '#/' && hash !== '#') {
-      var target = document.querySelector(hash);
-      if (target) target.scrollIntoView();
-    }
-  }
-  window.addEventListener('hashchange', function () { setRoute(window.location.hash); });
-  setRoute(window.location.hash || '#/', { skipScroll: true });
-
-  /* ---------- Projects data ---------- */
-  var STORAGE_KEY = 'portfolio-user-projects';
-  var projects = [];
-  var storageOK = true;
-  function loadProjects() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      projects = raw ? JSON.parse(raw) : [];
-    } catch (e) { storageOK = false; projects = []; }
-  }
-  function saveProjects() {
-    if (!storageOK) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); }
-    catch (e) { storageOK = false; document.getElementById('storage-note').hidden = false; }
-  }
-  loadProjects();
-  if (!storageOK) document.getElementById('storage-note').hidden = false;
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
-  function hostFromUrl(u) { try { return new URL(u).host + new URL(u).pathname.replace(/\/$/, ''); } catch (e) { return u; } }
-
-  var activeTag = null;
-  function renderTagFilters() {
-    var container = document.getElementById('tag-filters');
-    container.innerHTML = '';
-    var tagSet = {};
-    projects.forEach(function (p) { (p.tags || []).forEach(function (t) { tagSet[t] = true; }); });
-    var tags = Object.keys(tagSet);
-    tags.forEach(function (t) {
-      var chip = document.createElement('button');
-      chip.type = 'button';
-      chip.className = 'tag-chip' + (activeTag === t ? ' active' : '');
-      chip.textContent = t;
-      chip.setAttribute('aria-pressed', activeTag === t ? 'true' : 'false');
-      chip.addEventListener('click', function () {
-        activeTag = activeTag === t ? null : t;
-        renderProjects();
-      });
-      container.appendChild(chip);
-    });
-  }
-
-  function renderProjects(justAddedId) {
-    var list = document.getElementById('project-list');
-    list.innerHTML = '';
-    var visible = projects.filter(function (p) { return !activeTag || (p.tags || []).indexOf(activeTag) !== -1; });
-    var emptyEl = document.getElementById('empty-state');
-    if (projects.length === 0) {
-      emptyEl.hidden = false; emptyEl.textContent = 'No projects yet — add your first one above.';
-    } else if (visible.length === 0) {
-      emptyEl.hidden = false; emptyEl.textContent = 'No projects match that tag.';
-    } else {
-      emptyEl.hidden = true;
-    }
-    visible.slice().reverse().forEach(function (p) {
-      var li = document.createElement('li');
-      li.className = 'uproject';
-      if (p.id === justAddedId) li.classList.add('just-added');
-      var linkHtml = p.link ? '<a href="' + escapeHtml(p.link) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(hostFromUrl(p.link)) + '</a>' : '';
-      li.innerHTML =
-        '<span class="dot" aria-hidden="true"></span>' +
-        '<div class="uproject-body">' +
-          '<div class="uproject-top">' +
-            '<h3>' + escapeHtml(p.title) + '</h3>' +
-            '<div class="uproject-actions">' +
-              '<button type="button" class="btn-link" data-action="edit" data-id="' + p.id + '">Edit</button>' +
-              '<button type="button" class="btn-link" data-action="delete" data-id="' + p.id + '">Delete</button>' +
-            '</div>' +
-          '</div>' +
-          (p.desc ? '<p>' + escapeHtml(p.desc) + '</p>' : '') +
-          '<div class="stack">' + (p.tags || []).map(function (t) { return '<span>' + escapeHtml(t) + '</span>'; }).join('') + '</div>' +
-          (linkHtml ? '<div class="uproject-link">' + linkHtml + '</div>' : '') +
-        '</div>';
-      list.appendChild(li);
-    });
-    renderTagFilters();
-  }
-  renderProjects();
-
-  var form = document.getElementById('project-form');
-  var editingId = null;
-  function announce(msg) { var el = document.getElementById('form-status'); if (el) el.textContent = msg; }
-
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var title = form.title.value.trim();
-    var errEl = document.getElementById('form-error');
-    errEl.textContent = '';
-    if (!title) { errEl.textContent = 'Title is required.'; form.title.focus(); return; }
-    var tags = form.tags.value.split(',').map(function (t) { return t.trim(); }).filter(Boolean);
-    var link = form.link.value.trim();
-    if (link && !/^https?:\/\//i.test(link)) link = 'https://' + link;
-    var newId;
-    if (editingId) {
-      var idx = projects.findIndex(function (p) { return p.id === editingId; });
-      if (idx !== -1) {
-        projects[idx].title = title; projects[idx].desc = form.desc.value.trim();
-        projects[idx].tags = tags; projects[idx].link = link;
-        newId = projects[idx].id;
-      }
-      editingId = null;
-      document.getElementById('form-submit-btn').textContent = 'Add project';
-      document.getElementById('cancel-edit-btn').hidden = true;
-      announce('Project updated.');
-    } else {
-      newId = 'p' + Date.now() + Math.floor(Math.random() * 1000);
-      projects.push({ id: newId, title: title, desc: form.desc.value.trim(), tags: tags, link: link, addedAt: Date.now() });
-      announce('Project added.');
-    }
-    saveProjects();
-    form.reset();
-    renderProjects(newId);
-  });
-
-  document.getElementById('project-list').addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-action]');
-    if (!btn) return;
-    var id = btn.getAttribute('data-id');
-    var action = btn.getAttribute('data-action');
-    var p = projects.find(function (pr) { return pr.id === id; });
-    if (!p) return;
-    if (action === 'delete') {
-      if (!window.confirm('Delete "' + p.title + '"?')) return;
-      projects = projects.filter(function (pr) { return pr.id !== id; });
-      saveProjects(); renderProjects();
-      announce('Project deleted.');
-    } else if (action === 'edit') {
-      editingId = id;
-      form.title.value = p.title;
-      form.desc.value = p.desc || '';
-      form.tags.value = (p.tags || []).join(', ');
-      form.link.value = p.link || '';
-      document.getElementById('form-submit-btn').textContent = 'Save changes';
-      document.getElementById('cancel-edit-btn').hidden = false;
-      form.title.focus();
-    }
-  });
-
-  document.getElementById('cancel-edit-btn').addEventListener('click', function () {
-    editingId = null; form.reset();
-    document.getElementById('form-submit-btn').textContent = 'Add project';
-    this.hidden = true;
-  });
-
-  // Export via downloads capability, if granted
-  (async function initExport() {
-    try {
-      if (!window.claude || typeof window.claude.use !== 'function') return;
-      var downloads = await window.claude.use('downloads');
-      if (!downloads) return;
-      var exportBtn = document.getElementById('export-btn');
-      exportBtn.hidden = false;
-      exportBtn.addEventListener('click', async function () {
-        try {
-          await downloads.save({ filename: 'projects.json', data: JSON.stringify(projects, null, 2) });
-          announce('Export ready.');
-        } catch (e) {}
-      });
-    } catch (e) {}
-  })();
-})();
-</script>
-
+<footer class="wrap"><span class="mono">© 2026 Maximilian Fona · Built with intention.</span><a href="#home">Back to top ↑</a></footer>
+<dialog id="command-dialog" aria-labelledby="command-heading"><div class="dialog-top"><h2 id="command-heading">Quick navigation</h2><button class="tool" id="command-close" aria-label="Close quick navigation">×</button></div><div class="dialog-body"><label class="sr-only" for="command-input">Search sections and actions</label><input type="search" id="command-input" placeholder="Where would you like to go?" autocomplete="off" maxlength="100"><ul id="command-list" aria-label="Matching destinations"></ul><p id="command-empty" class="command-empty" role="status" hidden>No matching destinations.</p></div><p class="command-hint">↑ ↓ to move · Enter to open · Esc to close · Ctrl / ⌘ K to toggle</p></dialog>
+<script src="script.js"></script>
 </body>
 </html>
