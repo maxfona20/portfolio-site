@@ -1,0 +1,80 @@
+<section id="lab" class="section lab-section" aria-labelledby="lab-heading">
+  <div class="section-marker mono"><span>02 / PLAYGROUND</span><span>A SMALL LOOK UNDER THE SURFACE</span></div>
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Interactive concept demo</p>
+      <h2 id="lab-heading">Follow the request.</h2>
+    </div>
+    <p>One request. A few moving parts. Explore a small, browser-only model inspired by my Docker and Flask microservices project.</p>
+  </div>
+
+  <div class="lab-console" data-lab-state="ready">
+    <div class="lab-console-top">
+      <span class="mono lab-console-title"><span class="lab-status-dot" aria-hidden="true"></span> request_playground</span>
+      <span class="tag">Runs locally</span>
+    </div>
+    <div class="lab-controls">
+      <div class="lab-endpoint-control">
+        <label for="lab-endpoint">Choose an endpoint</label>
+        <select id="lab-endpoint" class="mono">
+          <option value="documents">GET /api/documents</option>
+          <option value="users">GET /api/users/me</option>
+          <option value="search">GET /api/search?q=security</option>
+        </select>
+      </div>
+      <label class="lab-auth-control" for="lab-auth">
+        <input type="checkbox" id="lab-auth" checked>
+        <span class="lab-toggle" aria-hidden="true"></span>
+        <span>Include demo token<small>Try turning this off</small></span>
+      </label>
+      <div class="lab-actions">
+        <button id="lab-send" class="btn primary" type="button" disabled>Send request <span aria-hidden="true">↗</span></button>
+        <button id="lab-reset" class="btn lab-reset" type="button" disabled>Reset</button>
+      </div>
+    </div>
+
+    <ol class="lab-flow" aria-label="Request journey">
+      <li class="lab-node" data-phase="client" data-state="waiting">
+        <div class="lab-node-top"><span class="lab-node-number mono" aria-hidden="true">01</span><span class="lab-node-mark" aria-hidden="true">↗</span></div>
+        <h3>Client</h3><span class="lab-node-sub mono">your browser</span>
+        <p class="lab-phase-status">Ready to send</p>
+      </li>
+      <li class="lab-node" data-phase="auth" data-state="waiting">
+        <div class="lab-node-top"><span class="lab-node-number mono" aria-hidden="true">02</span><span class="lab-node-mark" aria-hidden="true">⌁</span></div>
+        <h3>Auth check</h3><span class="lab-node-sub mono">token gate</span>
+        <p class="lab-phase-status">Waiting for request</p>
+      </li>
+      <li class="lab-node" data-phase="service" data-state="waiting">
+        <div class="lab-node-top"><span class="lab-node-number mono" aria-hidden="true">03</span><span class="lab-node-mark" aria-hidden="true">{ }</span></div>
+        <h3>Flask service</h3><span id="lab-service-name" class="lab-node-sub mono">documents.service</span>
+        <p class="lab-phase-status">Waiting for request</p>
+      </li>
+      <li class="lab-node" data-phase="log" data-state="waiting">
+        <div class="lab-node-top"><span class="lab-node-number mono" aria-hidden="true">04</span><span class="lab-node-mark" aria-hidden="true">≡</span></div>
+        <h3>Event log</h3><span class="lab-node-sub mono">request record</span>
+        <p class="lab-phase-status">Waiting for request</p>
+      </li>
+    </ol>
+
+    <div class="lab-code-grid">
+      <div class="lab-code-panel">
+        <div class="lab-panel-label mono"><span>Request</span><span>HTTP</span></div>
+        <pre tabindex="0" aria-label="Example HTTP request"><code id="lab-request">GET /api/documents HTTP/1.1
+Host: demo.local
+Authorization: Bearer [demo token]</code></pre>
+      </div>
+      <div class="lab-code-panel">
+        <div class="lab-panel-label mono"><span>Response</span><span id="lab-response-status" data-result="ready">Awaiting request</span></div>
+        <pre tabindex="0" aria-label="Simulated JSON response"><code id="lab-response">{
+  "message": "Send a request to explore the flow."
+}</code></pre>
+      </div>
+    </div>
+    <div class="lab-footer">
+      <p id="lab-result" class="lab-result" role="status" aria-live="polite" aria-atomic="true">Choose an endpoint, then send a request.</p>
+      <span id="lab-run-count" class="mono lab-run-count">0 demo runs</span>
+    </div>
+  </div>
+  <p class="lab-footnote">A simplified concept demo, not a live backend. All responses are simulated. No real tokens, accounts, or network requests are used.</p>
+  <noscript><p class="lab-footnote">Enable JavaScript to try the request demo. The flow above shows how a request moves through a client, an authentication check, a service, and logging.</p></noscript>
+</section>
