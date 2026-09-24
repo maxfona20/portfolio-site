@@ -1,0 +1,26 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+const dir=path.dirname(new URL(import.meta.url).pathname);
+const ctx={window:{}};vm.runInNewContext(fs.readFileSync(path.join(dir,'projects.js'),'utf8'),ctx);
+const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icons={camera:'<rect x="6" y="11" width="31" height="21" rx="3"/><path d="M13 11l3-6h12l3 6"/><circle cx="22" cy="21" r="7"/>',drill:'<path d="M8 9h23v13H16l-2 13H7l3-17H5V11h3z"/><path d="M31 12h11m-11 7h9M11 9V5h13v4"/>',speaker:'<rect x="11" y="3" width="24" height="34" rx="3"/><circle cx="23" cy="12" r="4"/><circle cx="23" cy="26" r="6"/>'};
+const icon=name=>`<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="1.5">${icons[name]}</svg>`;
+const artwork={
+manoo:`<div class="mock-window"><div class="mock-window-top"><b>manoo.</b><span>Good things, shared. ↗</span></div><div class="mock-window-body"><strong>Borrow nearby.<br>Make more possible.</strong><small>Useful things. People around you.</small><div class="rental-items"><div><div class="rental-icon">${icon('camera')}</div><span>Capture the day</span><small>Camera</small></div><div><div class="rental-icon">${icon('drill')}</div><span>Build something</span><small>Power drill</small></div><div><div class="rental-icon">${icon('speaker')}</div><span>Set the mood</span><small>Speaker</small></div></div></div></div>`,
+flask:`<div class="flow-preview"><div class="mini-top">GET /api/documents</div><div class="flow-client">JWT / AUTH</div><div class="flow-stem"></div><div class="flow-branches"><span>users.py</span><span>docs.py</span><span>search.py</span></div><div class="flow-base">DOCKER CONTAINERS / CONNECTED SERVICES</div></div>`,
+venmo:`<span class="phone-caption">INTERFACE / STATE / INTERACTION</span><div class="phone-preview"><div class="phone-notch"></div><small>Sample balance</small><strong>$125.00</strong><div class="phone-buttons"><span>Pay ↗</span><span>Request ↓</span></div><small>Sample activity</small><div class="phone-row"><i>A</i><span>Alex</span><span>− $12</span></div><div class="phone-row"><i>J</i><span>Jamie</span><span>+ $24</span></div><div class="phone-row"><i>S</i><span>Sam</span><span>− $8</span></div></div>`,
+ai:`<div class="creative-preview"><div class="creative-orbit"></div><div class="creative-number">40K<span>+</span></div><div class="creative-caption">INSTAGRAM FOLLOWERS</div><div class="creative-steps"><span>IDEA</span><i>→</i><span>GENERATE</span><i>→</i><span>PUBLISH</span></div></div>`
+};
+const cards=ctx.window.PORTFOLIO_PROJECTS.map(p=>`<article class="project-card" data-project="${p.id}" data-accent="${p.accent}" aria-labelledby="title-${p.id}"><div class="project-preview"><div aria-hidden="true" class="preview-index">[ ${p.index} ]</div><button class="bookmark js-only" data-save="${p.id}" aria-pressed="false" aria-label="Save ${escape(p.title)}">◇</button><div class="art-container" aria-hidden="true">${artwork[p.id]}</div><div class="preview-note"><span>${p.id==='ai'?'INDEPENDENT CREATIVE PROJECT':'CONCEPT VISUAL / NOT AN APP SCREENSHOT'}</span><span>${p.id==='venmo'?'SIMULATED PAYMENTS':p.category.toUpperCase()}</span></div></div><div class="project-info"><div class="project-kicker"><span>${escape(p.context)}</span><span>${p.category}</span></div><div class="project-title-row"><h3 id="title-${p.id}">${escape(p.title)}</h3><button class="case-trigger js-only" data-case="${p.id}" aria-label="Explore ${escape(p.title)}">↗</button></div><p>${escape(p.summary)}</p><div class="tags">${p.tags.map(t=>`<span class="tag">${escape(t)}</span>`).join('')}</div><button class="card-open js-only" data-case="${p.id}">${p.id==='venmo'?'Explore + try the demo':'Inside the project'} <span aria-hidden="true">↗</span></button><details class="project-details"><summary>My contribution</summary><ul>${p.bullets.map(t=>`<li>${escape(t)}</li>`).join('')}</ul></details></div></article>`).join('\n');
+let html=fs.readFileSync(path.join(dir,'index.template.html'),'utf8').replace('{{CARDS}}',cards).replace('{{LAB}}',fs.readFileSync(path.join(dir,'lab.html'),'utf8')).replace('{{NOTEBOOK}}',fs.readFileSync(path.join(dir,'notebook.html'),'utf8'));
+html=html.replace('<script src="projects.js"></script>','<script src="wallet.js"></script><script src="projects.js"></script>');
+fs.writeFileSync(path.join(dir,'index.html'),html);
+console.log('Assembled four static project cards and interactive modules.');
+// Produce a portable page as well. The résumé is embedded so downloads work offline.
+let portable=html.replace(/<link rel="stylesheet" href="([^"]+)">/g,(_,file)=>'<style>\n'+fs.readFileSync(path.join(dir,file),'utf8')+'\n</style>');
+portable=portable.replace(/<script src="([^"]+)"><\/script>/g,(_,file)=>'<script>\n'+fs.readFileSync(path.join(dir,file),'utf8').replace(/<\/script/gi,'<\\/script')+'\n</script>');
+const resume=fs.readFileSync(path.join(dir,'Maximilian-Fona-Resume.pdf')).toString('base64');
+portable=portable.replaceAll('href="Maximilian-Fona-Resume.pdf"','href="data:application/pdf;base64,'+resume+'"');
+fs.writeFileSync(path.join(dir,'Maximilian-Fona-Portfolio.html'),portable);
+console.log('Built standalone page with embedded résumé.');
